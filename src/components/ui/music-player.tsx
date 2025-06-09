@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Volume1 } from 'lucide-react';
+import { Volume2, VolumeX, Volume1, Pause, Play } from 'lucide-react';
 import { Button } from './button';
 import { Slider } from './slider';
 
@@ -13,14 +13,42 @@ export function MusicPlayer() {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-    const handleError = () => setError('未知错误');
-    const handleLoadedMetadata = () => setDuration(testAudio.duration);
+    const handlePlay = () => {
+      setIsPlaying(true);
+      setError(null);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+      setError(null);
+    };
+
+    const handleError = (e: ErrorEvent) => {
+      console.error('音频错误:', e);
+      setError('播放失败，请检查网络连接或刷新页面');
+      setIsPlaying(false);
+    };
+
+    const handleLoadedMetadata = () => {
+      setDuration(testAudio.duration);
+      setIsLoading(false);
+      setError(null);
+    };
+
     const handleTimeUpdate = () => {
       setProgress((testAudio.currentTime / testAudio.duration) * 100);
+    };
+
+    const handleLoadStart = () => {
+      setIsLoading(true);
+    };
+
+    const handleCanPlay = () => {
+      setIsLoading(false);
+      setError(null);
     };
 
     testAudio.addEventListener('play', handlePlay);
@@ -28,6 +56,11 @@ export function MusicPlayer() {
     testAudio.addEventListener('error', handleError);
     testAudio.addEventListener('loadedmetadata', handleLoadedMetadata);
     testAudio.addEventListener('timeupdate', handleTimeUpdate);
+    testAudio.addEventListener('loadstart', handleLoadStart);
+    testAudio.addEventListener('canplay', handleCanPlay);
+
+    // 预加载音频
+    testAudio.load();
 
     return () => {
       testAudio.removeEventListener('play', handlePlay);
@@ -35,19 +68,33 @@ export function MusicPlayer() {
       testAudio.removeEventListener('error', handleError);
       testAudio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       testAudio.removeEventListener('timeupdate', handleTimeUpdate);
+      testAudio.removeEventListener('loadstart', handleLoadStart);
+      testAudio.removeEventListener('canplay', handleCanPlay);
     };
   }, []);
 
   const togglePlay = async () => {
     try {
+      if (isLoading) {
+        return;
+      }
+
       if (isPlaying) {
         testAudio.pause();
       } else {
-        await testAudio.play();
+        const playPromise = testAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.error('播放错误:', error);
+            setError('播放失败，请点击页面以启用声音');
+            setIsPlaying(false);
+          });
+        }
       }
     } catch (err) {
       console.error('播放错误:', err);
-      setError('音频播放失败，请点击页面启用声音');
+      setError('播放失败，请点击页面以启用声音');
+      setIsPlaying(false);
     }
   };
 
@@ -57,6 +104,7 @@ export function MusicPlayer() {
   };
 
   const handleProgressChange = (values: number[]) => {
+    if (isLoading) return;
     const time = (values[0] / 100) * duration;
     testAudio.currentTime = time;
     setProgress(values[0]);
@@ -79,10 +127,10 @@ export function MusicPlayer() {
       <div className={`bg-black/30 backdrop-blur-sm rounded-full transition-all duration-300 ${isExpanded ? 'w-80' : 'w-auto'}`}>
         <div className="p-2 flex items-center gap-2">
           <span className="text-white/80 text-sm px-2 whitespace-nowrap">
-            测试音频 {isExpanded && formatTime(testAudio.currentTime)} / {isExpanded && formatTime(duration)}
+            {isLoading ? '加载中...' : `测试音频 ${isExpanded && formatTime(testAudio.currentTime)} / ${isExpanded && formatTime(duration)}`}
           </span>
           
-          {isExpanded && (
+          {isExpanded && !isLoading && (
             <>
               <div className="flex-1 mx-2">
                 <Slider
@@ -90,7 +138,7 @@ export function MusicPlayer() {
                   max={100}
                   step={1}
                   className="w-full"
-                  onValueChange={(values) => handleProgressChange(values)}
+                  onValueChange={handleProgressChange}
                 />
               </div>
               
@@ -101,7 +149,7 @@ export function MusicPlayer() {
                   max={100}
                   step={1}
                   className="w-20"
-                  onValueChange={(values) => handleVolumeChange(values)}
+                  onValueChange={handleVolumeChange}
                 />
               </div>
             </>
@@ -112,11 +160,12 @@ export function MusicPlayer() {
             size="icon"
             className="hover:bg-white/10 rounded-full transition-colors"
             onClick={togglePlay}
+            disabled={isLoading}
           >
             {isPlaying ? (
-              <Volume2 className="h-5 w-5 text-white animate-pulse" />
+              <Pause className="h-5 w-5 text-white animate-pulse" />
             ) : (
-              <VolumeX className="h-5 w-5 text-white/60" />
+              <Play className="h-5 w-5 text-white/60" />
             )}
           </Button>
         </div>
