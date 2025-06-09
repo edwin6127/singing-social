@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="300" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头部 -->
+  <circle cx="100" cy="70" r="50" fill="#FFB6C1"/>
+  
+  <!-- 脸部 -->
+  <circle cx="85" cy="60" r="5" fill="#333"/>
+  <circle cx="115" cy="60" r="5" fill="#333"/>
+  <path d="M90 85 Q100 95 110 85" stroke="#333" stroke-width="3" fill="none"/>
+  
+  <!-- 麦克风 -->
+  <rect x="95" cy="110" width="10" height="40" fill="#666"/>
+  <circle cx="100" cy="100" r="15" fill="#333"/>
+  
+  <!-- 身体 -->
+  <path d="M70 120 Q100 140 130 120 L120 200 L80 200 Z" fill="#FF69B4"/>
+  
+  <!-- 音符装饰 -->
+  <path d="M140 60 Q150 50 160 60 L155 80 Q145 70 140 80 Z" fill="#FFB6C1"/>
+  <path d="M40 80 Q50 70 60 80 L55 100 Q45 90 40 100 Z" fill="#FFB6C1"/>
+  
+  <!-- 头发 -->
+  <path d="M60 50 Q100 0 140 50" stroke="#FF69B4" stroke-width="20"/>
+</svg> 
