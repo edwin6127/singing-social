@@ -3,10 +3,10 @@ import { Volume2, VolumeX, Volume1, Pause, Play } from 'lucide-react';
 import { Button } from './button';
 import { Slider } from './slider';
 
-// 使用在线测试音频
-const testAudio = new Audio('https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav');
+// 使用本地测试音频
+const testAudio = new Audio('/test.mp3');
 testAudio.volume = 0.5;
-testAudio.preload = 'auto'; // 设置预加载
+testAudio.preload = 'auto';
 
 export function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
