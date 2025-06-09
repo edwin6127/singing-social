@@ -13,7 +13,7 @@ export default {
       center: true,
       padding: "2rem",
       screens: {
-          tftyf ku
+        "2xl": "1400px",
       },
     },
     extend: {
@@ -47,7 +47,8 @@ export default {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-        card: {asf asdf 
+        card: {
+          DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
       },
