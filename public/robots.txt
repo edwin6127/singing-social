@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+Sitemap: https://your-domain.com/sitemap.xml
+
+# 爬虫抓取频率
+Crawl-delay: 10 

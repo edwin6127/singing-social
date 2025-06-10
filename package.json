@@ -1,13 +1,17 @@
 {
   "name": "singing-social",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "test-build": "npm run clean && npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -18,12 +22,16 @@
     "@tanstack/react-query": "^5.76.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "i18next": "^25.2.1",
+    "i18next-browser-languagedetector": "^8.1.0",
     "lucide-react": "^0.358.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.56.3",
+    "react-i18next": "^15.5.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "vue-i18n": "^12.0.0-alpha.2",
     "wouter": "^3.7.0",
     "zod": "^3.24.4"
   },
@@ -34,6 +42,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.18",
+    "cssnano": "^7.0.7",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",

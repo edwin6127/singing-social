@@ -1,113 +1,133 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Volume2, VolumeX, Volume1, Pause, Play, RefreshCw } from 'lucide-react';
+import { Button } from './button';
+import { Slider } from './slider';
 
-function getRandomIndex(excludeIndex: number, length: number) {
-  let idx = Math.floor(Math.random() * length);
-  while (length > 1 && idx === excludeIndex) {
-    idx = Math.floor(Math.random() * length);
-  }
-  return idx;
-}
-
-// 提取文件名（不带扩展名）
-function getSongName(path: string) {
-  const parts = path.split('/');
-  const file = parts[parts.length - 1];
-  return decodeURIComponent(file.replace(/\.mp3$/i, ''));
-}
+const AUDIO_SOURCES = [
+  '/audio/background.mp3',
+  '/audio/background.ogg'
+];
 
 export function BackgroundMusic() {
-  const [musicList, setMusicList] = useState<string[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [volume] = useState(0.5); // 降低默认音量
-  const [error, setError] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [error, setError] = useState<string | null>(null);
+  const [currentSource, setCurrentSource] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 获取歌曲列表
   useEffect(() => {
-    setIsLoading(true);
-    fetch('/music-list.json')
-      .then(res => res.json())
-      .then((list: string[]) => {
-        setMusicList(list);
-        if (list.length > 0) {
-          setCurrentIndex(getRandomIndex(-1, list.length));
-        }
-        setError('');
-      })
-      .catch(err => {
-        console.error('加载音乐列表失败:', err);
-        setError('加载音乐列表失败');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-
-  // 切换歌曲时创建新 audio
-  useEffect(() => {
-    if (currentIndex === -1 || musicList.length === 0) return;
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-    const audio = new Audio(musicList[currentIndex]);
-    audio.volume = volume;
-    audio.loop = false;
+    // 创建音频实例
+    const audio = new Audio(AUDIO_SOURCES[currentSource]);
+    audio.volume = volume / 100;
+    audio.loop = true; // 循环播放
     audioRef.current = audio;
 
-    const handleEnded = () => {
-      const nextIdx = getRandomIndex(currentIndex, musicList.length);
-      setCurrentIndex(nextIdx);
+    // 错误处理
+    const handleError = () => {
+      console.error('音频加载失败，尝试切换源');
+      if (currentSource < AUDIO_SOURCES.length - 1) {
+        setCurrentSource(prev => prev + 1);
+      } else {
+        setError(t('player.error.failed'));
+      }
     };
 
-    const handleError = (e: ErrorEvent) => {
-      console.error('音频加载失败:', e);
-      setError('音频加载失败，请刷新页面重试');
+    // 自动播放处理
+    const handleCanPlay = () => {
+      setError(null);
+      if (isPlaying) {
+        audio.play().catch(() => {
+          setError(t('player.error.autoplay'));
+        });
+      }
     };
 
-    audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
-
-    // 自动播放（需用户有过交互才会生效）
-    audio.play().catch(err => {
-      console.error('音频播放失败:', err);
-      setError('音频播放失败，请点击页面任意位置启用声音');
-    });
+    audio.addEventListener('canplay', handleCanPlay);
 
     return () => {
-      audio.pause();
-      audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.pause();
     };
-  }, [currentIndex, musicList, volume]);
+  }, [currentSource, t]);
 
-  // 当前歌曲名
-  const currentSongName =
-    currentIndex !== -1 && musicList.length > 0
-      ? getSongName(musicList[currentIndex])
-      : '';
+  // 音量变化处理
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  }, [volume]);
 
-  // 显示加载状态或错误信息
-  if (isLoading) {
-    return (
-      <div className="fixed right-4 bottom-4 z-40 bg-black/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
-        加载音乐中...
+  const togglePlay = async () => {
+    if (!audioRef.current) return;
+
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+        setError(null);
+      }
+    } catch (err) {
+      setError(t('player.error.playback'));
+    }
+  };
+
+  const handleRetry = () => {
+    if (!audioRef.current) return;
+    setCurrentSource(0);
+    setError(null);
+  };
+
+  const VolumeIcon = volume === 0 ? VolumeX : volume < 50 ? Volume1 : Volume2;
+
+  return (
+    <div className="fixed bottom-4 right-4 flex items-center gap-4 bg-black/30 backdrop-blur-sm rounded-full p-2">
+      <div className="flex items-center gap-2 min-w-[100px]">
+        <VolumeIcon className="h-4 w-4 text-white/60" />
+        <Slider
+          value={[volume]}
+          max={100}
+          step={1}
+          className="w-20"
+          onValueChange={(values) => setVolume(values[0])}
+        />
       </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="fixed right-4 bottom-4 z-40 bg-black/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
-        {error}
-      </div>
-    );
-  }
+      {error ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-white/10 rounded-full"
+          onClick={handleRetry}
+        >
+          <RefreshCw className="h-5 w-5 text-white/60" />
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-white/10 rounded-full"
+          onClick={togglePlay}
+        >
+          {isPlaying ? (
+            <Pause className="h-5 w-5 text-white" />
+          ) : (
+            <Play className="h-5 w-5 text-white/60" />
+          )}
+        </Button>
+      )}
 
-  // 歌曲名显示在页面右下角
-  return currentSongName ? (
-    <div className="fixed right-4 bottom-4 z-40 bg-black/50 text-white px-4 py-2 rounded-lg backdrop-blur-sm text-sm">
-      正在播放：{currentSongName}
+      {error && (
+        <div className="absolute bottom-full right-0 mb-2 bg-red-500/20 backdrop-blur-sm rounded-lg p-2 text-sm text-white/90 whitespace-nowrap">
+          {error}
+        </div>
+      )}
     </div>
-  ) : null;
+  );
 } 

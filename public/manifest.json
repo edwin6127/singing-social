@@ -1,0 +1,96 @@
+{
+  "name": "一歌会友",
+  "short_name": "一歌会友",
+  "description": "音乐社交平台，让音乐爱好者在这里相遇、分享和交流",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "发现音乐",
+      "short_name": "发现",
+      "description": "浏览和发现新的音乐",
+      "url": "/discover",
+      "icons": [{ "src": "/icons/discover.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "上传音乐",
+      "short_name": "上传",
+      "description": "分享你的音乐作品",
+      "url": "/upload",
+      "icons": [{ "src": "/icons/upload.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "首页"
+    },
+    {
+      "src": "/screenshots/discover.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "发现音乐"
+    }
+  ],
+  "categories": ["music", "social", "entertainment"],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "prefer_related_applications": false
+} 

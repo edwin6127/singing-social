@@ -1,7 +1,42 @@
+# Dependencies
 node_modules
-.DS_Store
+.pnp
+.pnp.js
+
+# Development
 .git
+.vscode
+.idea
+*.log
+.DS_Store
+
+# Build artifacts
+dist-ssr
+*.local
+build
+out
+
+# Testing
+coverage
+.nyc_output
+
+# Cache
+.cache
+.eslintcache
+.stylelintcache
+.parcel-cache
+.next
+.nuxt
+.temp
+.tmp
+
+# Custom directories
 sing/
 scripts/
 public/music/converted/
-*.log 
+public/audio/converted/
+public/images/raw/
+
+# Environment
+.env*
+!.env.example 

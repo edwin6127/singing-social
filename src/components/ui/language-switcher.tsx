@@ -1,31 +1,27 @@
-import { Languages } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from './button';
-import { useState } from 'react';
 
 export type Language = 'zh' | 'en';
 
-interface Props {
-  onChange: (lang: Language) => void;
-}
-
-export function LanguageSwitcher({ onChange }: Props) {
-  const [currentLang, setCurrentLang] = useState<Language>('zh');
+export function LanguageSwitcher() {
+  const { i18n } = useTranslation();
 
   const toggleLanguage = () => {
-    const newLang = currentLang === 'zh' ? 'en' : 'zh';
-    setCurrentLang(newLang);
-    onChange(newLang);
+    const newLang = i18n.language.startsWith('zh') ? 'en' : 'zh';
+    i18n.changeLanguage(newLang);
+    localStorage.setItem('i18nextLng', newLang);
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="fixed bottom-4 left-4 bg-black/50 backdrop-blur-sm hover:bg-black/70"
-      onClick={toggleLanguage}
-    >
-      <Languages className="h-6 w-6 text-pink-500" />
-      <span className="ml-2 text-sm font-medium">{currentLang.toUpperCase()}</span>
-    </Button>
+    <div className="fixed top-4 right-4 z-50">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={toggleLanguage}
+        className="bg-white/10 hover:bg-white/20 text-white min-w-[80px] backdrop-blur-sm"
+      >
+        {i18n.language.startsWith('zh') ? 'English' : '中文'}
+      </Button>
+    </div>
   );
 } 
